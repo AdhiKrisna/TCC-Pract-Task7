@@ -6,7 +6,7 @@ steps:
     args:
       [
         "-c",
-        "npm install && npm run build"
+        "cd FE && npm install && npm run build"
       ]
 
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
@@ -14,7 +14,7 @@ steps:
     args:
       [
         "-c",
-        "gcloud config set app/cloud_build_timeout 1600 && gcloud app deploy"
+        "cd FE && gcloud config set app/cloud_build_timeout 1600 && gcloud app deploy"
       ]
 
 timeout: "1600s"
