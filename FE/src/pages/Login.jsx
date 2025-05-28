@@ -16,6 +16,8 @@ const Login = () => {
   }, []);
 
   const handleLogin = async () => {
+    console.log("Login button clicked");
+    console.log("API URL:", API_URL);
     if (!username || !password) {
       alert("Username and Password cannot be empty");
       return;
