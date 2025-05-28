@@ -10,6 +10,7 @@
 
   const allowedOrigins = [
     "http://localhost:5173",
+    "https://a-09-450915.uc.r.appspot.com"
   ];
   app.use(cors({
     origin: allowedOrigins,
@@ -20,7 +21,7 @@
   app.use(NoteRoute)
 
   app.get("/", (req, res) => {
-      res.send("Hello World 123 CI/CD Here")
+      res.send("Hello World 123")
   })
 
 
