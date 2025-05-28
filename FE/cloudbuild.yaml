@@ -1,6 +1,6 @@
 steps:
   - name: "gcr.io/cloud-builders/gsutil"
-    args: ["cp", "${_ENV}", "FE/.env"]
+    args: ["cp", "${_ENV}", ".env"]
   - name: "node:18"
     entrypoint: "bash"
     args:
