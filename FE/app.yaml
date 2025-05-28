@@ -1,10 +1,10 @@
-runtime: nodejs18  # masih didukung static handlers
+runtime: nodejs18
 instance_class: F1
 
 handlers:
-  - url: /(.*\.(css|js|png|jpg|ico|json|svg|woff2?))
+  - url: /(.*\.(css|js|png|jpg|ico|json|svg|woff2?|txt|webp|ttf))
     static_files: dist/\1
-    upload: dist/(.*\.(css|js|png|jpg|ico|json|svg|woff2?))
+    upload: dist/.*\.(css|js|png|jpg|ico|json|svg|woff2?|txt|webp|ttf)
     secure: always
 
   - url: /.*
