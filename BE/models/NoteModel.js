@@ -17,6 +17,6 @@ const Notes = db_instance.define(
     }
 )
 
-db_instance.sync({alter:true}).then(() => console.log("Database synced successfully"));
+db_instance.sync().then(() => console.log("Database synced successfully"));
 
 export default Notes;

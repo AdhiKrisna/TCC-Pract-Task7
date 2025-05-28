@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-
-// const API_URL = import.meta.env.VITE_API_URL;
 const API_URL = import.meta.env.VITE_API_URL;
 
-import '../styles/NoteList.css';
+import "../styles/NoteList.css";
 
-
-function NoteList({ notes, fetchNotes, fetchWithRefresh }) {
+function NoteList({ notes }) {
     const [editableNotes, setEditableNotes] = useState(notes);
-
     const titleRefs = useRef([]);
     const contentRefs = useRef([]);
 
@@ -21,17 +17,42 @@ function NoteList({ notes, fetchNotes, fetchWithRefresh }) {
         const newContent = contentRefs.current[index]?.innerText || "";
 
         try {
-            const response = await fetchWithRefresh(`${API_URL}/updateNote/${id}`, {
+            let accessToken = localStorage.getItem("accessToken");
+
+            let response = await fetch(`${API_URL}/updateNote/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({ title: newTitle, content: newContent }),
             });
 
-            if (response && response.ok) {
+            if (response.status === 403) {
+                const refreshRes = await fetch(`${API_URL}/token`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (!refreshRes.ok) throw new Error("Gagal refresh token");
+
+                const dataRefresh = await refreshRes.json();
+                const newAccessToken = dataRefresh.accessToken;
+                localStorage.setItem("accessToken", newAccessToken);
+
+                response = await fetch(`${API_URL}/updateNote/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${newAccessToken}`,
+                    },
+                    body: JSON.stringify({ title: newTitle, content: newContent }),
+                });
+            }
+
+            if (response.ok) {
                 alert("Note updated successfully");
-                fetchNotes();
+                // fetchNotes();
             } else {
                 alert("Failed to update note");
             }
@@ -43,13 +64,42 @@ function NoteList({ notes, fetchNotes, fetchWithRefresh }) {
 
     const deleteNote = async (id) => {
         try {
-            const response = await fetchWithRefresh(`${API_URL}/deleteNote/${id}`, {
+            let accessToken = localStorage.getItem("accessToken");
+
+            let response = await fetch(`${API_URL}/deleteNote/${id}`, {
                 method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
             });
 
-            if (response && response.ok) {
+            if (response.status === 403) {
+                const refreshRes = await fetch(`${API_URL}/token`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (!refreshRes.ok) throw new Error("Gagal refresh token");
+
+                const dataRefresh = await refreshRes.json();
+                const newAccessToken = dataRefresh.accessToken;
+                localStorage.setItem("accessToken", newAccessToken);
+
+                response = await fetch(`${API_URL}/deleteNote/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${newAccessToken}`,
+                    },
+                });
+            }
+
+            if (response.ok) {
                 alert("Note deleted successfully");
-                fetchNotes();
+                // fetchNotes();
+                //gunakan logic untuk menghapus note dari state saja
+                setEditableNotes((prevNotes) =>
+                    prevNotes.filter((note) => note.id !== id)
+                );
             } else {
                 alert("Failed to delete note");
             }
@@ -58,7 +108,6 @@ function NoteList({ notes, fetchNotes, fetchWithRefresh }) {
             alert("Failed to delete note");
         }
     };
-
 
     return (
         <div className="accordion w-100" id="notesAccordion">

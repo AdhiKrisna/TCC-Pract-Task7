@@ -11,58 +11,52 @@ const Dashboard = () => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
-    const fetchWithRefresh = async (url, options = {}) => {
-        let accessToken = localStorage.getItem("accessToken");
-
-        // Tambah Authorization header
-        options.headers = {
-            ...options.headers,
-            Authorization: `Bearer ${accessToken}`,
-        };
-
-        let response = await fetch(url, options);
-
-        // Kalau token expired
-        if (response.status === 403) {
-            const refreshRes = await fetch(`${API_URL}/token`, {
-                method: "GET",
-                credentials: "include", // Penting! Biar cookie refresh token ikut ke backend
-            });
-
-            if (!refreshRes.ok) throw new Error("Gagal refresh token");
-
-            const data = await refreshRes.json();
-            const newAccessToken = data.accessToken;
-            localStorage.setItem("accessToken", newAccessToken);
-
-            // Retry request dengan token baru
-            options.headers.Authorization = `Bearer ${newAccessToken}`;
-            response = await fetch(url, options);
-        }
-
-        return response;
-    };
-
-    // Fetch notes using fetchWithRefresh
     const fetchNotes = async () => {
         try {
-            const response = await fetchWithRefresh(`${API_URL}/notes`, {
+            let accessToken = localStorage.getItem("accessToken");
+
+            let response = await fetch(`${API_URL}/notes`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
                 },
             });
 
-            if (response && response.ok) {
-                const data = await response.json();
-                if (data.success) setNotes(data.notes);
+            // Kalau token expired
+            if (response.status === 403) {
+                const refreshRes = await fetch(`${API_URL}/token`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (!refreshRes.ok) throw new Error("Gagal refresh token");
+
+                const dataRefresh = await refreshRes.json();
+                const newAccessToken = dataRefresh.accessToken;
+                localStorage.setItem("accessToken", newAccessToken);
+
+                // Coba ulang request dengan token baru
+                response = await fetch(`${API_URL}/notes`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${newAccessToken}`,
+                    },
+                });
+            }
+
+            if (!response.ok) throw new Error("Request gagal");
+
+            const data = await response.json();
+            if (data.success) {
+                setNotes(data.notes);
             }
         } catch (error) {
-            console.error("Error fetching notes data", error);
+            console.error("Error fetching notes:", error);
         }
     };
 
-    // Add your updateNote and deleteNote methods here, using fetchWithRefresh
 
     const handleLogout = async () => {
         try {
@@ -88,10 +82,14 @@ const Dashboard = () => {
         fetchNotes();
     }, []);
 
+    const handleAddNote = (newNote) => {
+        setNotes((prevNotes) => [...prevNotes, newNote]);
+        };
+
     return (
         <div className="w-100 mt-5 px-5 mb-3">
 
-            <h1 className="text-center fw-bold">Aku Notes Triggered</h1>
+            <h1 className="text-center fw-bold">Aku Notes</h1>
             <p className="subHeader text-center">
                 Directly Reach the Title and Content To Edit The Note Data
             </p>
@@ -104,14 +102,11 @@ const Dashboard = () => {
                 Logout
             </button>
             <NoteForm
-                fetchNotes={fetchNotes}
-                fetchWithRefresh={fetchWithRefresh}
+                onAddNote={handleAddNote}
             />
             <hr />
             <NoteList
                 notes={notes}
-                fetchNotes={fetchNotes}
-                fetchWithRefresh={fetchWithRefresh}
             />
         </div>
 
