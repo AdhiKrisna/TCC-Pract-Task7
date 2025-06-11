@@ -1,26 +1,30 @@
-import { Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import PrivateRoute from "./components/PrivateRoute"; // Tambah ini
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
+import { useNavigate } from 'react-router-dom'
 
-import './styles/App.css';
 
 function App() {
+const navigate = useNavigate();
+
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
-        }
-      />
-    </Routes>
-  );
+    <>
+      <div>
+        <h1 className='font-utama'>Apa Peranmu?</h1>
+      </div>
+
+      <div className="card ">
+        <button className='button-peran'  onClick={() => navigate('/loginakun')}>
+          Pemilik Kos
+        </button>
+        <br/>
+        <button className='button-peran' onClick={() => navigate('/pencari')}>
+          Pencari Kos
+        </button>
+      </div>
+    </>
+  )
 }
 
-export default App;
+export default App

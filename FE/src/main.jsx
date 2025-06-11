@@ -1,17 +1,28 @@
-import React from 'react';
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'; // Import BrowserRouter
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import LoginAkun from './pages/loginakun.jsx'
+import RegisterAkun from './pages/registerakun.jsx'
+import Pencari from './pages/pencari.jsx'
+import DaftarKos from './pages/daftarkos.jsx'
+import CreateKos from './pages/createkos.jsx'
+import EditKos from './pages/editkos.jsx';
+import Profile from './pages/profile.jsx';
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Jika butuh JS Bootstrap
-
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/loginakun" element={<LoginAkun />} />
+        <Route path="/registerakun" element={<RegisterAkun />} />
+        <Route path="/pencari" element={<Pencari />} />
+        <Route path="/daftarkos" element={<DaftarKos />} />
+        <Route path="/createkos" element={<CreateKos />} />
+        <Route path="/editkos/:id" element={<EditKos />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
     </BrowserRouter>
-  </StrictMode>
+  </React.StrictMode>
 )
