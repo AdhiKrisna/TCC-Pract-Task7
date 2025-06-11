@@ -1,0 +1,23 @@
+steps:
+  - name: "gcr.io/cloud-builders/gsutil"
+    args: ["cp", "${_ENV}", "FE/.env"]
+  - name: "node:18"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "cd FE && npm install && npm run build"
+      ]
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "cd FE && gcloud config set app/cloud_build_timeout 1600 && gcloud app deploy"
+      ]
+
+timeout: "1600s"
+
+options:
+  logging: CLOUD_LOGGING_ONLY

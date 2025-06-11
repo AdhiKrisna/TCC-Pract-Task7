@@ -1,0 +1,25 @@
+
+#root {
+  width: 100%;
+}
+* {
+  background-color: #132237 !important; 
+  font-family: 'Arial', sans-serif;
+}
+
+h1, h3{
+  color: #187678 !important;
+}
+.subHeader{
+  color: #ebb723 !important;
+  font-weight: 100 !important;
+}
+
+.btn-danger:hover{
+  background-color: #d9534f !important;
+  color: #fff !important;
+}
+
+.username{
+  color: #fff !important;
+}
